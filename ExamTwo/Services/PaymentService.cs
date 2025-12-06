@@ -16,16 +16,22 @@ namespace ExamTwo.Services
             return _paymentRepo.GetAvailableChange();
         }
 
-        public bool ValidatePayment(int totalAmount, int totalCost)
+        public bool ValidatePayment(int totalAmount, int totalCost, out string errorMessage)
         {
-            return totalAmount >= totalCost;
+            if (totalAmount < totalCost)
+            {
+                errorMessage = "Dinero insuficiente.";
+                return false;
+            }
+            errorMessage = string.Empty;
+            return true;
         }
 
-        public bool CalculateChange(int totalAmount, int totalCost, out string changeMessage)
+        public bool CalculateChange(int totalAmount, int totalCost, out string changeMessage, out string errorMessage)
         {
             int change = totalAmount - totalCost;
             var available = _paymentRepo.GetAvailableChange();
-            changeMessage = $"Su vuelto es de: {change} colones.\nDesglose:";
+            changeMessage = $"Su vuelto es de: {change} colones.\n Desglose:";
 
             foreach (var coin in available.Keys.OrderByDescending(c => c))
             {
@@ -40,11 +46,13 @@ namespace ExamTwo.Services
 
             if (change > 0)
             {
-                changeMessage = "No hay suficiente cambio en la máquina.";
+                errorMessage = "No hay suficiente cambio en la máquina.";
                 return false;
             }
 
+            errorMessage = string.Empty;
             return true;
         }
+
     }
 }

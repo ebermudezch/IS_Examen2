@@ -27,16 +27,18 @@ namespace ExamTwo.Services
             return order.Sum(o => prices[o.Key] * o.Value);
         }
 
-        public bool ValidateInventory(Dictionary<string, int> order)
+        public bool ValidateInventory(Dictionary<string, int> order, out string errorMessage)
         {
             var inventory = _coffeeRepo.GetInventory();
             foreach (var item in order)
             {
                 if (!inventory.ContainsKey(item.Key) || item.Value > inventory[item.Key])
                 {
+                    errorMessage = $"No hay suficientes {item.Key} en la máquina.";
                     return false;
                 }
             }
+            errorMessage = string.Empty;
             return true;
         }
 
